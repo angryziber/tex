@@ -51,4 +51,11 @@ public class CraftedQueueTest {
   public void emptyQueueRemoveFails() {
     queue.remove();
   }
+
+  @Test
+  public void removeRestoresEmptyState() {
+    queue.add("c");
+    queue.remove();
+    empty();
+  }
 }

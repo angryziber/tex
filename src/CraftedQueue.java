@@ -1,47 +1,44 @@
 public class CraftedQueue implements Queue {
-  private Link top = new Link();
+  private Object item;
+  private CraftedQueue next;
 
   @Override
   public boolean isEmpty() {
-    return top.data == null;
+    return item == null;
   }
 
   @Override
   public int size() {
-    return countFrom(top);
+    return countFrom(this);
   }
 
-  private int countFrom(Link link) {
-    return link.data == null ? 0 : 1 + countFrom(link.next);
+  private static int countFrom(CraftedQueue queue) {
+    return queue.item == null ? 0 : 1 + countFrom(queue.next);
   }
 
   @Override
   public void add(Object item) {
-    addToTail(top, item);
+    addToTail(this, item);
   }
 
-  private void addToTail(Link link, Object item) {
-    if (link.data == null) {
-      link.data = item;
-      link.next = new Link();
+  private static void addToTail(CraftedQueue queue, Object item) {
+    if (queue.item == null) {
+      queue.item = item;
+      queue.next = new CraftedQueue();
     }
-    else addToTail(link.next, item);
+    else addToTail(queue.next, item);
   }
 
   @Override
   public Object top() {
-    if (top.data == null) throw new AssertionError();
-    return top.data;
+    if (item == null) throw new AssertionError();
+    return item;
   }
 
   @Override
   public void remove() {
-    if (top.next == null) throw new AssertionError();
-    top = top.next;
-  }
-
-  class Link {
-    Object data;
-    Link next;
+    if (next == null) throw new AssertionError();
+    item = next.item;
+    next = next.next;
   }
 }
