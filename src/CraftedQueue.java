@@ -10,7 +10,7 @@ public class CraftedQueue implements Queue {
   }
 
   @Override public void add(Object data) {
-    top.setToTail(new TopItem(), data);
+    top.setData(data, new TopItem());
   }
 
   @Override public Object top() {
@@ -22,7 +22,7 @@ public class CraftedQueue implements Queue {
   }
 
   static abstract class Item {
-    Object data;
+    private Object data;
 
     Item(Object data) {
       this.data = data;
@@ -40,32 +40,33 @@ public class CraftedQueue implements Queue {
 
     abstract int size();
 
-    abstract void setToTail(Item parent, Object data);
+    abstract void setData(Object data, Item receiver);
 
-    void replaceNext(Item next) {
+    void setNext(Item next) {
+      throw new UnsupportedOperationException();
     }
   }
 
   static class FilledItem extends Item {
-    Item next = new EmptyItem();
+    private Item next = new EmptyItem();
 
     FilledItem(Object data) {
       super(data);
     }
 
-    public int size() {
+    @Override public int size() {
       return 1 + next.size();
     }
 
-    public Item getNext() {
+    @Override public Item getNext() {
       return next;
     }
 
-    public void setToTail(Item parent, Object data) {
-      next.setToTail(this, data);
+    @Override public void setData(Object data, Item receiver) {
+      next.setData(data, this);
     }
 
-    public void replaceNext(Item next) {
+    @Override public void setNext(Item next) {
       this.next = next;
     }
   }
@@ -87,13 +88,13 @@ public class CraftedQueue implements Queue {
       throw new AssertionError();
     }
 
-    @Override public void setToTail(Item parent, Object data) {
-      parent.replaceNext(new FilledItem(data));
+    @Override public void setData(Object data, Item receiver) {
+      receiver.setNext(new FilledItem(data));
     }
   }
 
   class TopItem extends EmptyItem {
-    @Override public void replaceNext(Item next) {
+    @Override public void setNext(Item next) {
       top = next;
     }
   }
