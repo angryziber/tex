@@ -1,44 +1,99 @@
 public class CraftedQueue implements Queue {
-  private Object item;
-  private CraftedQueue next;
+  private Item top = new EmptyItem();
 
-  @Override
-  public boolean isEmpty() {
-    return item == null;
+  @Override public boolean isEmpty() {
+    return top.isEmpty();
   }
 
-  @Override
-  public int size() {
-    return countFrom(this);
+  @Override public int size() {
+    return top.count();
   }
 
-  private static int countFrom(CraftedQueue queue) {
-    return queue.item == null ? 0 : 1 + countFrom(queue.next);
+  @Override public void add(Object data) {
+    top.setToTail(new TopItem(), data);
   }
 
-  @Override
-  public void add(Object item) {
-    addToTail(this, item);
+  @Override public Object top() {
+    return top.getData();
   }
 
-  private static void addToTail(CraftedQueue queue, Object item) {
-    if (queue.item == null) {
-      queue.item = item;
-      queue.next = new CraftedQueue();
+  @Override public void remove() {
+    top = top.remove();
+  }
+
+  interface Item {
+    Object getData();
+    boolean isEmpty();
+    Item remove();
+    int count();
+    void setToTail(Item parent, Object data);
+    void replaceNext(Item next);
+  }
+
+  static class FilledItem implements Item {
+    Object data;
+    Item next = new EmptyItem();
+
+    FilledItem(Object data) {
+      this.data = data;
     }
-    else addToTail(queue.next, item);
+
+    public Object getData() {
+      return data;
+    }
+
+    public boolean isEmpty() {
+      return data == null;
+    }
+
+    public Item remove() {
+      return next;
+    }
+
+    public int count() {
+      return 1 + next.count();
+    }
+
+    public void setToTail(Item parent, Object data) {
+      next.setToTail(this, data);
+    }
+
+    @Override
+    public void replaceNext(Item next) {
+      this.next = next;
+    }
   }
 
-  @Override
-  public Object top() {
-    if (item == null) throw new AssertionError();
-    return item;
+  static class EmptyItem implements Item {
+    @Override public boolean isEmpty() {
+      return true;
+    }
+
+    @Override public int count() {
+      return 0;
+    }
+
+    @Override public Object getData() {
+      throw new AssertionError();
+    }
+
+    @Override public Item remove() {
+      throw new AssertionError();
+    }
+
+    @Override public void setToTail(Item parent, Object data) {
+      parent.replaceNext(new FilledItem(data));
+    }
+
+    @Override
+    public void replaceNext(Item next) {
+      throw new AssertionError();
+    }
   }
 
-  @Override
-  public void remove() {
-    if (next == null) throw new AssertionError();
-    item = next.item;
-    next = next.next;
+  class TopItem extends EmptyItem {
+    @Override public void replaceNext(Item next) {
+      top = next;
+    }
   }
 }
