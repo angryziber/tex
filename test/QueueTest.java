@@ -3,7 +3,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class QueueTest {
-  CraftedQueue queue = new CraftedQueue();
+  OneLinerMethodsQueue queue = new OneLinerMethodsQueue();
 
   @Test
   public void empty() {    

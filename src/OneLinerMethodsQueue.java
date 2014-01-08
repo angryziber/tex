@@ -1,4 +1,4 @@
-public class CraftedQueue implements Queue {
+public class OneLinerMethodsQueue implements Queue {
   private Item top = new EmptyItem();
 
   @Override public boolean isEmpty() {
