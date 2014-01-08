@@ -6,7 +6,7 @@ public class CraftedQueue implements Queue {
   }
 
   @Override public int size() {
-    return top.count();
+    return top.size();
   }
 
   @Override public void add(Object data) {
@@ -18,23 +18,13 @@ public class CraftedQueue implements Queue {
   }
 
   @Override public void remove() {
-    top = top.remove();
+    top = top.getNext();
   }
 
-  interface Item {
-    Object getData();
-    boolean isEmpty();
-    Item remove();
-    int count();
-    void setToTail(Item parent, Object data);
-    void replaceNext(Item next);
-  }
-
-  static class FilledItem implements Item {
+  static abstract class Item {
     Object data;
-    Item next = new EmptyItem();
 
-    FilledItem(Object data) {
+    Item(Object data) {
       this.data = data;
     }
 
@@ -46,30 +36,46 @@ public class CraftedQueue implements Queue {
       return data == null;
     }
 
-    public Item remove() {
-      return next;
+    abstract Item getNext();
+
+    abstract int size();
+
+    abstract void setToTail(Item parent, Object data);
+
+    void replaceNext(Item next) {
+    }
+  }
+
+  static class FilledItem extends Item {
+    Item next = new EmptyItem();
+
+    FilledItem(Object data) {
+      super(data);
     }
 
-    public int count() {
-      return 1 + next.count();
+    public int size() {
+      return 1 + next.size();
+    }
+
+    public Item getNext() {
+      return next;
     }
 
     public void setToTail(Item parent, Object data) {
       next.setToTail(this, data);
     }
 
-    @Override
     public void replaceNext(Item next) {
       this.next = next;
     }
   }
 
-  static class EmptyItem implements Item {
-    @Override public boolean isEmpty() {
-      return true;
+  static class EmptyItem extends Item {
+    EmptyItem() {
+      super(null);
     }
 
-    @Override public int count() {
+    @Override public int size() {
       return 0;
     }
 
@@ -77,17 +83,12 @@ public class CraftedQueue implements Queue {
       throw new AssertionError();
     }
 
-    @Override public Item remove() {
+    @Override public Item getNext() {
       throw new AssertionError();
     }
 
     @Override public void setToTail(Item parent, Object data) {
       parent.replaceNext(new FilledItem(data));
-    }
-
-    @Override
-    public void replaceNext(Item next) {
-      throw new AssertionError();
     }
   }
 

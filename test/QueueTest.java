@@ -2,8 +2,8 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class CraftedQueueTest {
-  private final CraftedQueue queue = new CraftedQueue();
+public class QueueTest {
+  CraftedQueue queue = new CraftedQueue();
 
   @Test
   public void empty() {    
