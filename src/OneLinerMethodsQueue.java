@@ -37,11 +37,8 @@ public class OneLinerMethodsQueue implements Queue {
     }
 
     abstract int size();
-
     abstract Item getNext();
-
     abstract void insertTo(Item receiver, Object data);
-
     abstract void setNext(Item next);
   }
 
