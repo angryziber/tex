@@ -1,5 +1,6 @@
 public class OneLinerMethodsQueue implements Queue {
-  private Item top = new EmptyItem();
+  private static final Item EMPTY = new EmptyItem();
+  private Item top = EMPTY;
 
   @Override public boolean isEmpty() {
     return top.isEmpty();
@@ -21,47 +22,35 @@ public class OneLinerMethodsQueue implements Queue {
     top = top.getNext();
   }
 
-  static abstract class Item {
+  static class Item {
+    private Item next = EMPTY;
     private Object data;
 
     Item(Object data) {
       this.data = data;
     }
 
-    public boolean isEmpty() {
+    boolean isEmpty() {
       return data == null;
     }
 
-    public Object getData() {
+    Object getData() {
       return data;
     }
 
-    abstract int size();
-    abstract Item getNext();
-    abstract void insertTo(Item receiver, Object data);
-    abstract void setNext(Item next);
-  }
-
-  static class FilledItem extends Item {
-    private Item next = new EmptyItem();
-
-    FilledItem(Object data) {
-      super(data);
-    }
-
-    @Override public int size() {
+    int size() {
       return 1 + next.size();
     }
 
-    @Override public Item getNext() {
+    Item getNext() {
       return next;
     }
 
-    @Override public void insertTo(Item receiver, Object data) {
+    void insertTo(Item receiver, Object data) {
       next.insertTo(this, data);
     }
 
-    @Override public void setNext(Item next) {
+    void setNext(Item next) {
       this.next = next;
     }
   }
@@ -84,11 +73,7 @@ public class OneLinerMethodsQueue implements Queue {
     }
 
     @Override public void insertTo(Item receiver, Object data) {
-      receiver.setNext(new FilledItem(data));
-    }
-
-    @Override void setNext(Item next) {
-      throw new UnsupportedOperationException();
+      receiver.setNext(new Item(data));
     }
   }
 
