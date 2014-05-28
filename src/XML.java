@@ -8,6 +8,7 @@ import java.io.ByteArrayInputStream;
 public class XML {
   public static DocumentBuilder newBuilder() throws ParserConfigurationException {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
     return factory.newDocumentBuilder();
   }
 
